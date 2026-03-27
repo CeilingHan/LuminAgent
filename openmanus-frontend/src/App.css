@@ -1,0 +1,26 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #f5f5f5;
+}
+
+.ant-layout-content {
+  background-color: #fff !important;
+}
+
+.ant-table-thead > tr > th {
+  background-color: #fafafa !important;
+}
+
+.ant-card {
+  border-radius: 8px !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+}
+
+.ant-statistic-title {
+  color: #666 !important;
+}
