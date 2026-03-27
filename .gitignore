@@ -1,0 +1,10 @@
+
+node_modules
+.cache
+uploads
+*.pdf
+*.log
+.DS_Store
+dist
+build
+
