@@ -85,7 +85,7 @@ cp OpenManus/config/config.example.toml OpenManus/config/config.toml
 
 ```bash
 cd OpenManus
-python main.py
+python web_server.py
 ```
 
 ### 5. 运行前端服务
