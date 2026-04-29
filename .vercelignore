@@ -1,0 +1,7 @@
+OpenManus/
+.venv/
+node_modules/
+docker-compose.yml
+Dockerfile
+create_milvus_collection.py
+.env

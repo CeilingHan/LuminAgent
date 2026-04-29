@@ -55,7 +55,7 @@ class Message(BaseModel):
     """Represents a chat message in the conversation"""
 
     role: ROLE_TYPE = Field(...)  # type: ignore
-    content: Optional[str] = Field(default=None)
+    content: Optional[Union[str, List[dict]]] = Field(default=None)
     tool_calls: Optional[List[ToolCall]] = Field(default=None)
     name: Optional[str] = Field(default=None)
     tool_call_id: Optional[str] = Field(default=None)
@@ -95,6 +95,20 @@ class Message(BaseModel):
         if self.base64_image is not None:
             message["base64_image"] = self.base64_image
         return message
+    @classmethod
+    def user_message_multimodal(
+        cls, text: str, images_b64: list
+    ) -> "Message":
+        """创建包含图片的多模态用户消息"""
+        content = [{"type": "text", "text": text}]
+        for b64 in images_b64:
+            content.append({
+                "type": "image_url",
+                "image_url": {
+                    "url": f"data:image/jpeg;base64,{b64}"
+                }
+            })
+        return cls(role=Role.USER, content=content)
 
     @classmethod
     def user_message(

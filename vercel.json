@@ -1,0 +1,5 @@
+{
+  "name": "openmanus-frontend",
+  "framework": "create-react-app",
+  "rootDirectory": "openmanus-frontend"
+}

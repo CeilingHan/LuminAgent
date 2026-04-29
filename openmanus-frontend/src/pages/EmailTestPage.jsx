@@ -30,7 +30,8 @@ export default function EmailTestPage() {
 
     try {
       // 调用后端发送邮件
-      const res = await fetch("http://localhost:8000/execute", {
+      const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || "http://127.0.0.1:8000";
+      const res = await fetch(`${apiBaseUrl}/execute`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
