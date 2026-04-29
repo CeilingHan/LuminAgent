@@ -8,6 +8,7 @@ from app.prompt.mcp import MULTIMEDIA_RESPONSE_PROMPT, NEXT_STEP_PROMPT, SYSTEM_
 from app.schema import AgentState, Message
 from app.tool.base import ToolResult
 from app.tool.mcp import MCPClients
+from app.tool.obsidian_full_tool import ObsidianFullTool
 
 
 class MCPAgent(ToolCallAgent):

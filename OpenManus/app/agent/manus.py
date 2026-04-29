@@ -12,6 +12,7 @@ from app.tool.ask_human import AskHuman
 from app.tool.browser_use_tool import BrowserUseTool
 from app.tool.mcp import MCPClients, MCPClientTool
 from app.tool.python_execute import PythonExecute
+from app.tool.research_tools import ResearchTools
 from app.tool.str_replace_editor import StrReplaceEditor
 
 
@@ -35,6 +36,7 @@ class Manus(ToolCallAgent):
         default_factory=lambda: ToolCollection(
             PythonExecute(),
             BrowserUseTool(),
+            ResearchTools(),
             StrReplaceEditor(),
             AskHuman(),
             Terminate(),
