@@ -38,9 +38,9 @@ const Dashboard = () => {
 
         // 模拟最近调用记录（实际项目可替换为真实接口）
         setRecentCalls([
-          { id: 1, skill: 'Browser use', agent: 'Manus Agent', status: 'success', time: '2026-03-23 10:23:45' },
-          { id: 2, skill: 'Python Execute', agent: 'Manus Agent', status: 'failed', time: '2026-03-23 10:15:30' },
-          { id: 3, skill: 'Ask human', agent: 'Manus Agent', status: 'success', time: '2026-03-23 09:45:12' },
+          { id: 1, skill: 'Browser use', agent: 'LuminAgent', status: 'success', time: '2026-03-23 10:23:45' },
+          { id: 2, skill: 'Python Execute', agent: 'LuminAgent', status: 'failed', time: '2026-03-23 10:15:30' },
+          { id: 3, skill: 'Ask human', agent: 'LuminAgent', status: 'success', time: '2026-03-23 09:45:12' },
         ]);
       } catch (error) {
         console.error('获取仪表盘数据失败:', error);
@@ -89,7 +89,7 @@ const Dashboard = () => {
 
   return (
     <div>
-      <Title level={3}>OpenManus 仪表盘</Title>
+      <Title level={3}>LuminAgent 仪表盘</Title>
       
       {/* 核心统计卡片 */}
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>

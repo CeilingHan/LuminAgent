@@ -10,22 +10,26 @@ import {
   ClockCircleOutlined,
   SaveOutlined,
 } from '@ant-design/icons';
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 
 const { Header, Sider, Content } = Layout;
 const { Title } = Typography;
 
 const MainLayout = () => {
-  const [agentStatus, setAgentStatus] = useState({ online: true, name: 'Manus Agent' });
+  const location = useLocation();
+  const [agentStatus, setAgentStatus] = useState({ online: true, name: 'LuminAgent' });
   const [loading, setLoading] = useState(false);
+
+  // Derive current key from location
+  const currentKey = location.pathname.slice(1) || 'chat';
 
   useEffect(() => {
     const fetchAgentStatus = async () => {
       try {
         setLoading(true);
-        setAgentStatus({ online: true, name: 'Manus Agent' });
+        setAgentStatus({ online: true, name: 'LuminAgent' });
       } catch (error) {
-        setAgentStatus({ online: false, name: 'Manus Agent' });
+        setAgentStatus({ online: false, name: 'LuminAgent' });
       } finally {
         setLoading(false);
       }
@@ -47,8 +51,8 @@ const MainLayout = () => {
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Sider width={200} theme="light">
-        <div style={{ padding: '16px', fontSize: '18px', fontWeight: 'bold' }}>OpenManus</div>
-        <Menu mode="inline" items={menuItems} defaultSelectedKeys={['chat']} style={{ borderRight: 0 }} />
+        <div style={{ padding: '16px', fontSize: '18px', fontWeight: 'bold' }}>LuminAgent</div>
+        <Menu mode="inline" items={menuItems} selectedKeys={[currentKey]} style={{ borderRight: 0 }} />
       </Sider>
 
       <Layout>
@@ -60,9 +64,8 @@ const MainLayout = () => {
           </Space>
           <Title level={4} style={{ margin: 0, lineHeight: '64px' }}>
             {(() => {
-              const path = window.location.pathname.slice(1) || 'chat';
-              const item = menuItems.find(i => i.key === path);
-              return item ? item.key === 'chat' ? 'Agent对话' : item.label?.props?.children : 'Agent对话';
+              const item = menuItems.find(i => i.key === currentKey);
+              return item ? item.label?.props?.children || item.key : 'Agent对话';
             })()}
           </Title>
         </Header>

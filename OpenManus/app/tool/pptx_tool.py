@@ -139,7 +139,7 @@ class PptxTool(BaseTool):
             font_size=32, bold=True, color=self.THEME["text"], align=PP_ALIGN.LEFT
         )
         self._add_textbox(
-            slide, "AI 自动生成 · OpenManus 科研助手",
+            slide, "AI 自动生成 · LuminAgent 科研助手",
             Inches(1.5), Inches(5.5), Inches(10), Inches(0.5),
             font_size=14, color=self.THEME["subtext"], align=PP_ALIGN.LEFT
         )
@@ -212,7 +212,7 @@ class PptxTool(BaseTool):
             font_size=48, bold=True, color=self.THEME["text"], align=PP_ALIGN.CENTER
         )
         self._add_textbox(
-            slide, "Powered by OpenManus 科研助手",
+            slide, "Powered by LuminAgent 科研助手",
             Inches(1.5), Inches(4.5), Inches(10), Inches(0.5),
             font_size=16, color=self.THEME["subtext"], align=PP_ALIGN.CENTER
         )

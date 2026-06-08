@@ -33,7 +33,7 @@ const ApiTest = () => {
       const values = form.getFieldsValue();
       const requestData = {
         skillId: values.skillId,
-        agentName: 'Manus Agent',
+        agentName: 'LuminAgent',
         parameters: JSON.parse(values.parameters || '{}'),
       };
 
@@ -161,7 +161,7 @@ const ApiTest = () => {
             <Code block>
 {`{
   "skillId": "Browser use",
-  "agentName": "Manus Agent",
+  "agentName": "LuminAgent",
   "parameters": {
     "url": "https://www.baidu.com"
   }

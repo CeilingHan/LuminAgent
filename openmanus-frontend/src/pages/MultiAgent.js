@@ -14,7 +14,7 @@ const MultiAgent = () => {
       setLoading(true);
       const res = await agentApi.getMultiAgentList();
       setAgentList(res || [
-        { id: 'manus-1', name: 'Manus Agent', status: 'online', skills: ['BrowserUse', 'PythonExecute'] },
+        { id: 'manus-1', name: 'LuminAgent', status: 'online', skills: ['BrowserUse', 'PythonExecute'] },
         { id: 'manus-2', name: 'Planning Agent', status: 'offline', skills: ['Planning'] },
       ]);
     } catch (error) {

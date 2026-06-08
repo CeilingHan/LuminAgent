@@ -1,6 +1,6 @@
-# OpenManus Frontend
+# LuminAgent Frontend
 
-LuminAgent 前端 — React 19 + Ant Design 6，连接 OpenManus 后端 FastAPI 服务。
+LuminAgent 前端 — React 19 + Ant Design 6，连接后端 FastAPI 服务。
 
 ## 快速开始
 

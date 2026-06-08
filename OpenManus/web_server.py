@@ -90,7 +90,7 @@ app.add_middleware(
 async def get_root():
     """返回 Agent 基本信息和可用技能"""
     return {
-        "name": "Manus Agent",
+        "name": "LuminAgent",
         "version": "0.1.0",
         "status": "online",
         "skills": AVAILABLE_TOOLS,
