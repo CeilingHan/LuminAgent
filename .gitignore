@@ -1,16 +1,39 @@
+# Dependencies
 node_modules/
-.cache/
+.pnp
+.pnp.js
+
+# Python
 *.pyc
 __pycache__/
 .venv/
 venv/
 *.egg-info/
+*.egg
 dist/
 build/
-uploads/*
-!uploads/.gitkeep
-.env
+*.so
+
+# IDE / OS
+.vscode/
+.idea/
 .DS_Store
-*.log
+*.swp
+*.swo
+
+# Uploads / Large files
+**/uploads/*
+!**/uploads/.gitkeep
+
+# Runtime data
 data/task_results/
+data/scheduler_jobs.db
+*.log
+.env
 .claude/
+
+# React build cache
+**/.cache/
+
+# Jupyter
+.ipynb_checkpoints/
