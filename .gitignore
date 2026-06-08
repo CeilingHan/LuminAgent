@@ -1,0 +1,16 @@
+node_modules/
+.cache/
+*.pyc
+__pycache__/
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+uploads/*
+!uploads/.gitkeep
+.env
+.DS_Store
+*.log
+data/task_results/
+.claude/
