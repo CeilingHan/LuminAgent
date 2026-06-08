@@ -1,0 +1,1 @@
+2026-06-08 19:52:59.332 | INFO     | app.tracer:init_langsmith:59 - 🔍 LangSmith tracing enabled — Project: LuminAgent, Endpoint: https://api.smith.langchain.com
