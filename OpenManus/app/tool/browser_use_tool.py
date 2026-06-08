@@ -253,25 +253,26 @@ class BrowserUseTool(BaseTool, Generic[Context]):
                         return ToolResult(
                             error="Query is required for 'web_search' action"
                         )
-                    # Execute the web search and return results directly without browser navigation
+                    # 🔥 只搜索不导航：返回文本结果供 LLM 总结，不打开浏览器页面
                     search_response = await self.web_search_tool.execute(
-                        query=query, fetch_content=True, num_results=1
+                        query=query, fetch_content=True, num_results=3
                     )
                     if not search_response.results:
-                        # Avoid IndexError when all engines fail to return results.
                         return ToolResult(
                             error=search_response.error
                             or "Web search returned no results."
                         )
-                    # Navigate to the first search result
-                    first_search_result = search_response.results[0]
-                    url_to_navigate = first_search_result.url
 
-                    page = await context.get_current_page()
-                    await page.goto(url_to_navigate)
-                    await page.wait_for_load_state()
-
-                    return search_response
+                    # 格式化搜索结果文本（不导航浏览器）
+                    lines = [f"🔍 搜索 \"{query}\" 结果："]
+                    for i, r in enumerate(search_response.results, 1):
+                        lines.append(f"\n{i}. {r.title}")
+                        lines.append(f"   URL: {r.url}")
+                        if r.description:
+                            lines.append(f"   摘要: {r.description[:300]}")
+                        if r.raw_content:
+                            lines.append(f"   内容预览: {r.raw_content[:500]}")
+                    return ToolResult(output="\n".join(lines))
 
                 # Element interaction actions
                 elif action == "click_element":

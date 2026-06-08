@@ -6,6 +6,7 @@ from pydantic import Field
 from app.agent.base import BaseAgent
 from app.llm import LLM
 from app.schema import AgentState, Memory
+from app.tracer import traceable
 
 
 class ReActAgent(BaseAgent, ABC):
@@ -30,6 +31,7 @@ class ReActAgent(BaseAgent, ABC):
     async def act(self) -> str:
         """Execute decided actions"""
 
+    @traceable(name="agent_step", run_type="chain")
     async def step(self) -> str:
         """Execute a single step: think and act."""
         should_act = await self.think()

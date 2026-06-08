@@ -119,6 +119,8 @@ api_key = "sk-..."  # 替换为真实 API 密钥
 
 ## 快速启动
 
+### 终端模式运行
+
 一行命令运行 OpenManus：
 
 ```bash
@@ -127,16 +129,52 @@ python main.py
 
 然后通过终端输入你的创意！
 
+### 运行 MCP 工具版本
+
 如需使用 MCP 工具版本，可运行：
 ```bash
 python run_mcp.py
 ```
+
+### 运行多智能体版本
 
 如需体验不稳定的多智能体版本，可运行：
 
 ```bash
 python run_flow.py
 ```
+
+### 运行 Web API 服务
+
+启动后端 API 服务以支持前端集成：
+
+```bash
+python web_server.py
+```
+
+API 服务将运行在 `http://localhost:8000`。
+
+### 运行前端
+
+首先，导航到前端目录：
+
+```bash
+cd ../openmanus-frontend
+```
+
+安装依赖（首次运行）：
+
+```bash
+npm install
+```
+
+启动前端开发服务器：
+
+```bash
+npm start
+```
+
+前端将运行在 `http://localhost:3000`。
 
 ## 添加自定义多智能体
 

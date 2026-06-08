@@ -6,7 +6,9 @@ import {
   TeamOutlined,
   DashboardOutlined,
   ApiOutlined,
-  MessageOutlined
+  MessageOutlined,
+  ClockCircleOutlined,
+  SaveOutlined,
 } from '@ant-design/icons';
 import { Link, Outlet } from 'react-router-dom';
 
@@ -32,19 +34,21 @@ const MainLayout = () => {
   }, []);
 
   const menuItems = [
-    { key: 'dashboard', icon: <DashboardOutlined />, label: <Link to="/">仪表盘</Link> },
-    { key: 'skills', icon: <AppstoreOutlined />, label: <Link to="/skills">技能管理(Skills)</Link> },
-    { key: 'tools', icon: <ToolOutlined />, label: <Link to="/tools">工具管理(Tools)</Link> },
-    { key: 'multi-agent', icon: <TeamOutlined />, label: <Link to="/multi-agent">多Agent协同</Link> },
     { key: 'chat', icon: <MessageOutlined />, label: <Link to="/chat">Agent对话</Link> },
+    { key: 'multi-agent', icon: <TeamOutlined />, label: <Link to="/multi-agent">多Agent协同</Link> },
+    { key: 'scheduled-tasks', icon: <ClockCircleOutlined />, label: <Link to="/scheduled-tasks">定时任务</Link> },
     { key: 'api-test', icon: <ApiOutlined />, label: <Link to="/api-test">API测试</Link> },
+    { key: 'memory', icon: <SaveOutlined />, label: <Link to="/memory">记忆管理</Link> },
+    { key: 'tools', icon: <ToolOutlined />, label: <Link to="/tools">工具管理</Link> },
+    { key: 'skills', icon: <AppstoreOutlined />, label: <Link to="/skills">技能管理</Link> },
+    { key: 'dashboard', icon: <DashboardOutlined />, label: <Link to="/dashboard">仪表盘</Link> },
   ];
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Sider width={200} theme="light">
         <div style={{ padding: '16px', fontSize: '18px', fontWeight: 'bold' }}>OpenManus</div>
-        <Menu mode="inline" items={menuItems} defaultSelectedKeys={['dashboard']} style={{ borderRight: 0 }} />
+        <Menu mode="inline" items={menuItems} defaultSelectedKeys={['chat']} style={{ borderRight: 0 }} />
       </Sider>
 
       <Layout>
@@ -55,7 +59,11 @@ const MainLayout = () => {
             </Spin>
           </Space>
           <Title level={4} style={{ margin: 0, lineHeight: '64px' }}>
-            {menuItems.find(item => item.key === window.location.pathname.slice(1) || item.key === 'dashboard')?.label?.props?.children}
+            {(() => {
+              const path = window.location.pathname.slice(1) || 'chat';
+              const item = menuItems.find(i => i.key === path);
+              return item ? item.key === 'chat' ? 'Agent对话' : item.label?.props?.children : 'Agent对话';
+            })()}
           </Title>
         </Header>
 

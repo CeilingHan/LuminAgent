@@ -3,9 +3,12 @@ import asyncio
 
 from app.agent.manus import Manus
 from app.logger import logger
+from app.tracer import init_langsmith
 
 
 async def main():
+    # Initialize LangSmith tracing before anything else
+    init_langsmith()
     # Parse command line arguments
     parser = argparse.ArgumentParser(description="Run Manus agent with a prompt")
     parser.add_argument(
