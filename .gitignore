@@ -37,3 +37,4 @@ data/scheduler_jobs.db
 
 # Jupyter
 .ipynb_checkpoints/
+config.toml
