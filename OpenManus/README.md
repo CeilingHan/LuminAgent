@@ -118,6 +118,8 @@ api_key = "sk-..."  # Replace with your actual API key
 
 ## Quick Start
 
+### Run in Terminal Mode
+
 One line for run OpenManus:
 
 ```bash
@@ -126,16 +128,52 @@ python main.py
 
 Then input your idea via terminal!
 
+### Run MCP Tool Version
+
 For MCP tool version, you can run:
 ```bash
 python run_mcp.py
 ```
+
+### Run Multi-Agent Version
 
 For unstable multi-agent version, you also can run:
 
 ```bash
 python run_flow.py
 ```
+
+### Run Web API Server
+
+To start the backend API server for frontend integration:
+
+```bash
+python web_server.py
+```
+
+The API server will be running at `http://localhost:8000`.
+
+### Run Frontend
+
+First, navigate to the frontend directory:
+
+```bash
+cd ../openmanus-frontend
+```
+
+Install dependencies (first time only):
+
+```bash
+npm install
+```
+
+Start the frontend development server:
+
+```bash
+npm start
+```
+
+The frontend will be running at `http://localhost:3000`.
 
 ### Custom Adding Multiple Agents
 

@@ -1,4 +1,5 @@
 import json
+import os
 import threading
 import tomllib
 from pathlib import Path
@@ -57,6 +58,24 @@ class SearchSettings(BaseModel):
     country: str = Field(
         default="us",
         description="Country code for search results (e.g., us, cn, uk)",
+    )
+
+
+class LangSmithSettings(BaseModel):
+    """Configuration for LangSmith tracing"""
+
+    LANGSMITH_TRACING: bool = Field(
+        default=False, description="Enable LangSmith tracing"
+    )
+    LANGSMITH_ENDPOINT: str = Field(
+        default="https://api.smith.langchain.com",
+        description="LangSmith API endpoint",
+    )
+    LANGSMITH_API_KEY: Optional[str] = Field(
+        default=None, description="LangSmith API key"
+    )
+    LANGSMITH_PROJECT: str = Field(
+        default="LuminAgent", description="LangSmith project name"
     )
 
 
@@ -189,6 +208,9 @@ class AppConfig(BaseModel):
     daytona_config: Optional[DaytonaSettings] = Field(
         None, description="Daytona configuration"
     )
+    langsmith_config: Optional[LangSmithSettings] = Field(
+        None, description="LangSmith tracing configuration"
+    )
 
     class Config:
         arbitrary_types_allowed = True
@@ -230,8 +252,71 @@ class Config:
         with config_path.open("rb") as f:
             return tomllib.load(f)
 
+    @staticmethod
+    def _load_env_file() -> dict:
+        env_vars = {}
+        env_path = PROJECT_ROOT / ".env"
+        if env_path.exists():
+            with env_path.open("r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if not line or line.startswith("#") or "=" not in line:
+                        continue
+                    key, value = line.split("=", 1)
+                    key = key.strip()
+                    value = value.strip()
+                    if (value.startswith('"') and value.endswith('"')) or (
+                        value.startswith("'") and value.endswith("'")
+                    ):
+                        value = value[1:-1]
+                    env_vars[key] = value
+        env_vars.update(os.environ)
+        return env_vars
+
+    @classmethod
+    def _merge_env_vars(cls, raw_config: dict, env_vars: dict) -> dict:
+        def get_env(*names):
+            for name in names:
+                value = env_vars.get(name)
+                if value:
+                    return value
+            return None
+
+        llm_config = raw_config.get("llm", {})
+        provider = get_env("LLM_PROVIDER", "LLM_DEFAULT_PROVIDER")
+        if provider and provider in llm_config and isinstance(llm_config[provider], dict):
+            raw_config["llm"] = {**llm_config, **llm_config[provider]}
+
+        if env_api_key := get_env(
+            "LLM_API_KEY",
+            "OPENAI_API_KEY",
+            "DASHSCOPE_API_KEY",
+            "DEEPSEEK_API_KEY",
+        ):
+            raw_config.setdefault("llm", {})["api_key"] = env_api_key
+        if env_base_url := get_env(
+            "LLM_BASE_URL",
+            "OPENAI_BASE_URL",
+            "DASHSCOPE_BASE_URL",
+            "DEEPSEEK_BASE_URL",
+        ):
+            raw_config.setdefault("llm", {})["base_url"] = env_base_url
+        if env_model := get_env(
+            "LLM_MODEL",
+            "DASHSCOPE_MODEL",
+            "DEEPSEEK_MODEL",
+        ):
+            raw_config.setdefault("llm", {})["model"] = env_model
+        if env_api_type := get_env("LLM_API_TYPE", "OPENAI_API_TYPE"):
+            raw_config.setdefault("llm", {})["api_type"] = env_api_type
+        if env_api_version := get_env("LLM_API_VERSION", "OPENAI_API_VERSION"):
+            raw_config.setdefault("llm", {})["api_version"] = env_api_version
+
+        return raw_config
+
     def _load_initial_config(self):
         raw_config = self._load_config()
+        raw_config = self._merge_env_vars(raw_config, self._load_env_file())
         base_llm = raw_config.get("llm", {})
         llm_overrides = {
             k: v for k, v in raw_config.get("llm", {}).items() if isinstance(v, dict)
@@ -310,6 +395,13 @@ class Config:
             run_flow_settings = RunflowSettings(**run_flow_config)
         else:
             run_flow_settings = RunflowSettings()
+
+        langsmith_config = raw_config.get("langsmith", {})
+        if langsmith_config:
+            langsmith_settings = LangSmithSettings(**langsmith_config)
+        else:
+            langsmith_settings = LangSmithSettings()
+
         config_dict = {
             "llm": {
                 "default": default_settings,
@@ -324,6 +416,7 @@ class Config:
             "mcp_config": mcp_settings,
             "run_flow_config": run_flow_settings,
             "daytona_config": daytona_settings,
+            "langsmith_config": langsmith_settings,
         }
 
         self._config = AppConfig(**config_dict)
@@ -357,6 +450,11 @@ class Config:
     def run_flow_config(self) -> RunflowSettings:
         """Get the Run Flow configuration"""
         return self._config.run_flow_config
+
+    @property
+    def langsmith_config(self) -> Optional[LangSmithSettings]:
+        """Get the LangSmith tracing configuration"""
+        return self._config.langsmith_config
 
     @property
     def workspace_root(self) -> Path:

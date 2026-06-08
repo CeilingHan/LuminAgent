@@ -29,6 +29,7 @@ from app.schema import (
     Message,
     ToolChoice,
 )
+from app.tracer import wrap_openai_client
 
 
 REASONING_MODELS = ["o1", "o3-mini"]
@@ -223,6 +224,12 @@ class LLM:
                 self.client = BedrockClient()
             else:
                 self.client = AsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
+
+            # Wrap the OpenAI client with LangSmith tracing for automatic
+            # LLM-call tracing. This wraps .chat.completions.create() so
+            # every LLM API call appears as a child "llm" span.
+            if self.api_type != "aws":
+                self.client = wrap_openai_client(self.client)
 
             self.token_counter = TokenCounter(self.tokenizer)
 

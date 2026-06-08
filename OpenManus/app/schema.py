@@ -1,3 +1,4 @@
+from datetime import datetime
 from enum import Enum
 from typing import Any, List, Literal, Optional, Union
 
@@ -199,3 +200,28 @@ class Memory(BaseModel):
     def to_dict_list(self) -> List[dict]:
         """Convert messages to list of dicts"""
         return [msg.to_dict() for msg in self.messages]
+
+
+# ── Persistent Memory types ──────────────────────────────────
+
+
+class MemoryType(str, Enum):
+    """Persistent memory categories (file-based, like Claude Code)."""
+
+    USER = "user"           # 用户身份/偏好
+    FEEDBACK = "feedback"   # 用户纠正/确认的方法
+    PROJECT = "project"     # 项目目标/假设/进展
+    REFERENCE = "reference" # 外部资源指针 (论文/工具/数据集)
+
+
+class MemoryItem(BaseModel):
+    """A single persistent memory — stored as a Markdown file with YAML frontmatter."""
+
+    name: str               # kebab-case slug (filename without .md)
+    description: str = ""   # one-line summary — used for relevance matching
+    type: MemoryType = MemoryType.PROJECT
+    content: str = ""       # Markdown body (after frontmatter)
+    metadata: dict = Field(default_factory=dict)
+    links: list[str] = Field(default_factory=list)  # [[related-slug]] references
+    created_at: str = Field(default_factory=lambda: datetime.now().isoformat())
+    updated_at: str = Field(default_factory=lambda: datetime.now().isoformat())

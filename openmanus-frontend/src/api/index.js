@@ -1,10 +1,10 @@
 // src/api/index.js
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://127.0.0.1:8000";
 
-// 对接 OpenManus MCP 后端
+// 对接 LuminAgent MCP 后端
 export const agentApi = {
   getAgentCard: () => fetch(`${API_BASE_URL}/`).then(res => res.json()),
-  getAgentStatus: () => Promise.resolve({ online: true, name: "Manus Agent" }),
+  getAgentStatus: () => Promise.resolve({ online: true, name: "LuminAgent" }),
   callAgentSkill: (data) => fetch(`${API_BASE_URL}/execute`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -14,7 +14,7 @@ export const agentApi = {
     })
   }).then(res => res.json()),
   getMultiAgentList: () => Promise.resolve([
-    { id: "manus-1", name: "Manus Agent", status: "online", skills: ["BrowserUse", "PythonExecute"] }
+    { id: "manus-1", name: "LuminAgent", status: "online", skills: ["BrowserUse", "PythonExecute"] }
   ])
 };
 

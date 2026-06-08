@@ -1,70 +1,128 @@
-# Getting Started with Create React App
+# LuminAgent Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+LuminAgent 前端 — React 19 + Ant Design 6，连接后端 FastAPI 服务。
 
-## Available Scripts
+## 快速开始
 
-In the project directory, you can run:
+```bash
+# 1. 启动后端 (需要先启动)
+cd ../OpenManus && python web_server.py   # → http://localhost:8000
 
-### `npm start`
+# 2. 启动前端
+cd openmanus-frontend
+npm install
+npm start                                  # → http://localhost:3000
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 文件结构
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+```
+src/
+├── index.js                  # React 入口，挂载到 DOM
+├── App.js                    # 路由配置 (React Router v6)
+├── App.css                   # 全局样式
+├── api/
+│   └── index.js              # API Helper (agentApi, skillApi, toolApi)
+├── layout/
+│   └── MainLayout.js         # 主布局 — Sider 侧边栏 + Header + Content
+└── pages/
+    ├── Chat.js               # 💬 Agent 对话 — 核心页面
+    │                           SSE 流式接收，支持 Agent/Plan/普通 三种模式
+    │                           Python 代码编辑器弹窗
+    │                           搜索结果浮窗 → 二级 Drawer 详情
+    │                           Plan Card 步骤进度展示
+    ├── ScheduledTasks.js     # ⏰ 定时任务管理
+    │                           任务列表 / 新建(cron表达式+快捷预设) / 执行历史
+    ├── MemoryManager.js      # 🧠 记忆管理
+    │                           记忆列表 / 新建(Markdown) / 详情查看
+    │                           四种类型: user / project / feedback / reference
+    ├── Skills.js             # 📦 技能管理
+    │                           上方: 可用工具列表 (从 GET / 动态加载)
+    │                           下方: 用户自定义技能 CRUD + 从 URL 加载
+    ├── Tools.js              # 🔧 工具管理 (基础 CRUD 表格)
+    ├── MultiAgent.js         # 👥 多 Agent 协同
+    ├── ApiTest.js            # 🔌 API 测试页面
+    ├── Dashboard.js          # 📊 仪表盘
+    └── EmailTestPage.jsx     # 📧 邮件测试页
+```
 
-### `npm test`
+## 页面说明
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+| 页面 | 路由 | 说明 |
+|---|---|---|
+| Agent 对话 | `/chat` (默认首页 `/`) | 核心交互页面。三种模式：Plan → 先计划后执行、Agent → 意图分析+工具路由、普通 → 纯 LLM 对话 |
+| 多 Agent 协同 | `/multi-agent` | 多 Agent 协作 |
+| 定时任务 | `/scheduled-tasks` | Cron 定时任务 CRUD + 执行历史 |
+| API 测试 | `/api-test` | 调试后端 API |
+| 记忆管理 | `/memory` | 持久化记忆文件 CRUD |
+| 工具管理 | `/tools` | 底层工具列表 |
+| 技能管理 | `/skills` | 工具列表 + 用户自定义技能 |
+| 仪表盘 | `/dashboard` | 概览页 |
 
-### `npm run build`
+## 侧边栏菜单
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+菜单定义在 `layout/MainLayout.js` 的 `menuItems` 数组中，路由在 `App.js` 中注册：
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```
+💬 Agent对话       ← 默认首页
+👥 多Agent协同
+⏰ 定时任务
+🔌 API测试
+🧠 记忆管理
+🔧 工具管理
+📦 技能管理
+📊 仪表盘
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+添加新页面时需同时修改 `App.js`(路由) 和 `MainLayout.js`(菜单)。
 
-### `npm run eject`
+## SSE 事件处理
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Chat 页面使用原生 `fetch` + `ReadableStream` 手动解析 SSE，处理以下事件类型：
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+| event type | 更新到 msg 的哪个字段 |
+|---|---|
+| `text` | `msg.content` — 流式追加 |
+| `status` | `msg.stageText` |
+| `tool_call` | `msg.toolCalls` — 追加工具调用标签 |
+| `tool_result` | `msg.toolResult` — 绿色执行结果面板 |
+| `search_result` | `msg.searchResults` — 搜索结果列表 |
+| `plan_created` | `msg.plan` — Plan Card 步骤卡片 |
+| `step_start` / `step_completed` / `step_error` | `msg.plan.steps[].status` |
+| `error` | `msg.content` — 追加错误信息 |
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## 消息状态结构
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```javascript
+{
+  id: number,                 // Date.now() 时间戳
+  role: 'user' | 'assistant',
+  content: string,            // 累加的文本内容
+  // 以下为 assistant 消息可选字段:
+  searchResults: [...],       // 搜索结果
+  stageText: string,          // 当前阶段状态
+  toolCalls: [...],           // 工具调用标签
+  toolResult: string,         // 工具执行结果原文
+  plan: {                     // Plan 模式计划卡片
+    plan_id, title,
+    steps: [{text, status}]   // status: not_started | in_progress | completed | error
+  }
+}
+```
 
-## Learn More
+## API 配置
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+前端默认连接 `http://127.0.0.1:8000`，通过环境变量覆盖：
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```bash
+REACT_APP_API_BASE_URL=http://your-host:8000 npm start
+```
 
-### Code Splitting
+所有页面使用原生 `fetch()` 直接调用，`api/index.js` 为早期封装（部分页面未使用）。
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## 技术栈
 
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- React 19
+- Ant Design 6
+- React Router 7
+- Create React App (react-scripts 5)

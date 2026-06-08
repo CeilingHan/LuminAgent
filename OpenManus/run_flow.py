@@ -6,9 +6,12 @@ from app.agent.manus import Manus
 from app.config import config
 from app.flow.flow_factory import FlowFactory, FlowType
 from app.logger import logger
+from app.tracer import init_langsmith
 
 
 async def run_flow():
+    # Initialize LangSmith tracing
+    init_langsmith()
     agents = {
         "manus": Manus(),
     }
